@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeSerialization", "TypeSerialization\TypeSerialization.csproj", "{90DA9A90-8F25-42A3-AAC4-0EF09532BA03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{A568983A-CD8B-467F-B725-6CE70D6A37BC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{38EB8C5D-11E9-491D-96AC-FB5033F8D652}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90DA9A90-8F25-42A3-AAC4-0EF09532BA03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90DA9A90-8F25-42A3-AAC4-0EF09532BA03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90DA9A90-8F25-42A3-AAC4-0EF09532BA03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90DA9A90-8F25-42A3-AAC4-0EF09532BA03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A568983A-CD8B-467F-B725-6CE70D6A37BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A568983A-CD8B-467F-B725-6CE70D6A37BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A568983A-CD8B-467F-B725-6CE70D6A37BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A568983A-CD8B-467F-B725-6CE70D6A37BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6D7D4B0F-53F2-4C3A-81AE-C1D28D30B55E}
+	EndGlobalSection
+EndGlobal
