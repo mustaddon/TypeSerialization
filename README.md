@@ -1,4 +1,4 @@
-# TypeSerialization
+# TypeSerialization [![NuGet version](https://badge.fury.io/nu/TypeSerialization.svg)](http://badge.fury.io/nu/TypeSerialization)
 Serialization an object type to/from a string
 
 ## Features
@@ -9,11 +9,9 @@ Serialization an object type to/from a string
 ```C#
 var str = TypeSerializer.Serialize(typeof(Dictionary<int,string>));
 Console.WriteLine(str);
-```
 
-*Console output:*
-```
-Dictionary(Int32-String)
+// Console output: 
+// Dictionary(Int32-String)
 ```
 
 ## Example 2: Deserialization

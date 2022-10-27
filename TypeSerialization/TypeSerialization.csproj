@@ -16,7 +16,7 @@
     <Product>TypeSerialization</Product>
     <Title>TypeSerialization</Title>
     <Description>Serialization an object type to/from a string</Description>
-    <PackageTags>serialization</PackageTags>
+    <PackageTags>type serialization serializer type2string string2type type-to-string type-from-string string-to-type</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/mustaddon/TypeSerialization</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mustaddon/TypeSerialization</RepositoryUrl>
