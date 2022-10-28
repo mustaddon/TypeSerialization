@@ -16,7 +16,9 @@ namespace TypeSerialization
             if (!type.IsGenericType)
                 return type.Name;
 
-            return $"{type.Name.Split('`').First()}({string.Join("-", type.GenericTypeArguments.Select(x => Serialize(x)))})";
+            var genericArgs = type.GetGenericArguments().Select(x => x.IsGenericParameter ? string.Empty : Serialize(x));
+
+            return $"{type.Name.Split('`').First()}({string.Join("-", genericArgs)})";
         }
     }
 }

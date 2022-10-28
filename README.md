@@ -22,4 +22,8 @@ var deserializer = new TypeDeserializer(new[] {
 }.SelectMany(x => x.GetTypes()));
 
 var type = deserializer.Deserialize("Dictionary(Int32-String)");
+Console.WriteLine(type);
+
+// Console output: 
+// System.Collections.Generic.Dictionary`2[System.Int32,System.String]
 ```

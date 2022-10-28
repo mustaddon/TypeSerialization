@@ -2,10 +2,11 @@ namespace Tests
 {
     public class TestDeserializer
     {
-        readonly TypeDeserializer _deserializer = new (new[] {
+        readonly TypeDeserializer _deserializer = new(new[] {
             typeof(int).Assembly,
             typeof(List<>).Assembly,
         }.SelectMany(x => x.GetTypes()));
+
 
         [Test]
         public void String()
@@ -33,6 +34,29 @@ namespace Tests
         {
             var result = _deserializer.Deserialize("Dictionary(Int32-String)");
             Assert.That(result, Is.EqualTo(typeof(Dictionary<int, string>)));
+        }
+
+        [Test]
+        public void DictionaryOpen()
+        {
+            var result = _deserializer.Deserialize("Dictionary(-)");
+            Assert.That(result, Is.EqualTo(typeof(Dictionary<,>)));
+        }
+
+        [Test]
+        public void ListOpen()
+        {
+            var result = _deserializer.Deserialize("List()");
+            Assert.That(result, Is.EqualTo(typeof(List<>)));
+        }
+
+        [Test]
+        public void OpenlessRegistration()
+        {
+            var type = typeof(Dictionary<int, List<string>>);
+            var deserializer = new TypeDeserializer(new[] { type });
+            var result = deserializer.Deserialize("Dictionary(Int32-List(String))");
+            Assert.That(result, Is.EqualTo(type));
         }
     }
 }

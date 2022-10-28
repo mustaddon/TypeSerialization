@@ -9,7 +9,7 @@ namespace TypeSerialization
     {
         public TypeDeserializer(IEnumerable<Type> types)
         {
-            _types = new Lazy<TypesCollection>(() => InitTypesCollection(types));
+            _types = new(() => new TypesCollection(types));
         }
 
         readonly Lazy<TypesCollection> _types;
@@ -20,10 +20,10 @@ namespace TypeSerialization
         /// <returns>An object type.</returns>
         public Type Deserialize(string value)
         {
-            if (_types.Value.Simples.TryGetValue(value, out var type))
-                return type;
+            if (value[value.Length - 1] != ')')
+                return _types.Value.Simples[value];
 
-            if (_deserializedGenerics.TryGetValue(value, out type))
+            if (_deserializedGenerics.TryGetValue(value, out var type))
                 return type;
 
             _deserializedGenerics.TryAdd(value, type = Parse(value));
@@ -43,7 +43,7 @@ namespace TypeSerialization
 
             if (parts.Count == 1)
                 _types.Value.Simples.TryGetValue(typeName, out type);
-            else if (_types.Value.Generics.TryGetValue($"{typeName}`{parts.Count - 1}", out type))
+            else if (_types.Value.Generics.TryGetValue($"{typeName}`{parts.Count - 1}", out type) && parts.Skip(1).Any(x => x.Length > 0))
                 type = type.MakeGenericType(parts.Skip(1).Select(x => Parse(x)).ToArray());
 
             return type ?? throw new KeyNotFoundException($"Type '{str}' not found");
@@ -83,26 +83,38 @@ namespace TypeSerialization
             return result;
         }
 
-        static TypesCollection InitTypesCollection(IEnumerable<Type> types)
+    }
+
+    internal class TypesCollection
+    {
+        public TypesCollection(IEnumerable<Type> types)
         {
-            var result = new TypesCollection();
-
             foreach (var type in types)
-            {
-                var dict = type.IsGenericType ? result.Generics
-                    : result.Simples;
-
-                if (!dict.ContainsKey(type.Name))
-                    dict.Add(type.Name, type);
-            }
-
-            return result;
+                Add(type);
         }
 
-        class TypesCollection
+        public Dictionary<string, Type> Simples { get; } = new();
+        public Dictionary<string, Type> Generics { get; } = new();
+
+        private void Add(Type type)
         {
-            public Dictionary<string, Type> Simples { get; } = new();
-            public Dictionary<string, Type> Generics { get; } = new();
+            if (!type.IsGenericType)
+            {
+                var simple = type.IsArray ? type.GetElementType()! : type;
+
+                if (!this.Simples.ContainsKey(simple.Name))
+                    this.Simples.Add(simple.Name, simple);
+
+                return;
+            }
+
+            foreach (var x in type.GenericTypeArguments)
+                Add(x);
+
+            var generic = type.GetGenericTypeDefinition();
+
+            if (!this.Generics.ContainsKey(generic.Name))
+                this.Generics.Add(generic.Name, generic);
         }
     }
 }
