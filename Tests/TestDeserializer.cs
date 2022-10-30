@@ -51,11 +51,25 @@ namespace Tests
         }
 
         [Test]
+        public void Many()
+        {
+            var result = _deserializer.DeserializeMany("Nullable(Boolean)-Dictionary(Int32-String)");
+            Assert.That(result, Is.EqualTo(new[] { typeof(bool?), typeof(Dictionary<int, string>) }));
+        }
+
+        [Test]
+        public void ManyOpen()
+        {
+            var result = _deserializer.DeserializeMany("List()-Dictionary(-)");
+            Assert.That(result, Is.EqualTo(new[] { typeof(List<>), typeof(Dictionary<,>) }));
+        }
+
+        [Test]
         public void OpenlessRegistration()
         {
-            var type = typeof(Dictionary<int, List<string>>);
+            var type = typeof(Dictionary<string, Dictionary<int, int?>>);
             var deserializer = new TypeDeserializer(new[] { type });
-            var result = deserializer.Deserialize("Dictionary(Int32-List(String))");
+            var result = deserializer.Deserialize("Dictionary(String-Dictionary(Int32-Nullable(Int32)))");
             Assert.That(result, Is.EqualTo(type));
         }
     }

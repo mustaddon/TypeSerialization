@@ -43,5 +43,19 @@ namespace Tests
             var result = TypeSerializer.Serialize(typeof(List<>));
             Assert.That(result, Is.EqualTo("List()"));
         }
+
+        [Test]
+        public void Many()
+        {
+            var result = TypeSerializer.Serialize(new[] { typeof(bool?), typeof(Dictionary<int, string>) });
+            Assert.That(result, Is.EqualTo("Nullable(Boolean)-Dictionary(Int32-String)"));
+        }
+
+        [Test]
+        public void ManyOpen()
+        {
+            var result = TypeSerializer.Serialize(new[] { typeof(List<>), typeof(Dictionary<,>) });
+            Assert.That(result, Is.EqualTo("List()-Dictionary(-)"));
+        }
     }
 }

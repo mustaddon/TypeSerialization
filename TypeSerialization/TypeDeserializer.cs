@@ -17,11 +17,12 @@ namespace TypeSerialization
 
         /// <summary>Converts the string representation of a type to an object type.</summary>
         /// <param name="value">A string like: "String", "Array(Int32)", "Dictionary(Int32-String)", ...</param>
-        /// <returns>An object type.</returns>
+        /// <returns>Object type.</returns>
         public Type Deserialize(string value)
         {
             if (value[value.Length - 1] != ')')
-                return _types.Value.Simples[value];
+                return _types.Value.Simples.TryGetValue(value, out var simple) ? simple
+                    : throw TypeNotFoundException(value);
 
             if (_deserializedGenerics.TryGetValue(value, out var type))
                 return type;
@@ -29,6 +30,14 @@ namespace TypeSerialization
             _deserializedGenerics.TryAdd(value, type = Parse(value));
 
             return type;
+        }
+
+        /// <summary>Converts the string representation of types to an array of object types.</summary>
+        /// <param name="value">A string like: "Boolean-List(String)-Array(Nullable(Int32))".</param>
+        /// <returns>Array of object types.</returns>
+        public Type[] DeserializeMany(string value)
+        {
+            return ExtractTypeStrings(value, 0, value.Length).Select(Deserialize).ToArray();
         }
 
         Type Parse(string str)
@@ -46,7 +55,7 @@ namespace TypeSerialization
             else if (_types.Value.Generics.TryGetValue($"{typeName}`{parts.Count - 1}", out type) && parts.Skip(1).Any(x => x.Length > 0))
                 type = type.MakeGenericType(parts.Skip(1).Select(x => Parse(x)).ToArray());
 
-            return type ?? throw new KeyNotFoundException($"Type '{str}' not found");
+            return type ?? throw TypeNotFoundException(str);
         }
 
         static List<string> TypeParts(string str)
@@ -62,15 +71,21 @@ namespace TypeSerialization
 
             result.Add(str.Substring(0, typeLen));
 
-            var openCount = 0;
-            var start = typeLen + 1;
-            var end = str.Length - 1;
+            foreach (var x in ExtractTypeStrings(str, typeLen + 1, str.Length - 1))
+                result.Add(x);
 
-            for (var i = start; i <= end; i++)
+            return result;
+        }
+
+        static IEnumerable<string> ExtractTypeStrings(string str, int start, int end)
+        {
+            var openCount = 0;
+
+            for (var i = start; i < end; i++)
             {
-                if (i == end || (str[i] == '-' && openCount <= 0))
+                if (str[i] == '-' && openCount <= 0)
                 {
-                    result.Add(str.Substring(start, i - start));
+                    yield return str.Substring(start, i - start);
                     openCount = 0;
                     start = i + 1;
                 }
@@ -80,9 +95,10 @@ namespace TypeSerialization
                     openCount--;
             }
 
-            return result;
+            yield return str.Substring(start, end - start);
         }
 
+        static KeyNotFoundException TypeNotFoundException(string type) => new($"Type '{type}' not found");
     }
 
     internal class TypesCollection
