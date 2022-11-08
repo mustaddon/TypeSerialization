@@ -22,7 +22,7 @@ namespace TypeSerialization
         {
             if (value[value.Length - 1] != ')')
                 return _types.Value.Simples.TryGetValue(value, out var simple) ? simple
-                    : throw TypeNotFoundException(value);
+                    : throw NotRegisteredException(value);
 
             if (_deserializedGenerics.TryGetValue(value, out var type))
                 return type;
@@ -40,6 +40,14 @@ namespace TypeSerialization
             return ExtractTypeStrings(value, 0, value.Length).Select(Deserialize).ToArray();
         }
 
+
+        public void Register(params Type[] types) => Register(types.AsEnumerable());
+        public void Register(IEnumerable<Type> types)
+        {
+            foreach (var type in types)
+                _types.Value.Add(type);
+        }
+
         Type Parse(string str)
         {
             var parts = TypeParts(str);
@@ -55,7 +63,7 @@ namespace TypeSerialization
             else if (_types.Value.Generics.TryGetValue($"{typeName}`{parts.Count - 1}", out type) && parts.Skip(1).Any(x => x.Length > 0))
                 type = type.MakeGenericType(parts.Skip(1).Select(x => Parse(x)).ToArray());
 
-            return type ?? throw TypeNotFoundException(str);
+            return type ?? throw NotRegisteredException(str);
         }
 
         static List<string> TypeParts(string str)
@@ -98,7 +106,7 @@ namespace TypeSerialization
             yield return str.Substring(start, end - start);
         }
 
-        static KeyNotFoundException TypeNotFoundException(string type) => new($"Type '{type}' not found");
+        static KeyNotFoundException NotRegisteredException(string type) => new($"Type '{type}' not registered");
     }
 
     internal class TypesCollection
@@ -112,7 +120,7 @@ namespace TypeSerialization
         public Dictionary<string, Type> Simples { get; } = new();
         public Dictionary<string, Type> Generics { get; } = new();
 
-        private void Add(Type type)
+        public void Add(Type type)
         {
             if (!type.IsGenericType)
             {

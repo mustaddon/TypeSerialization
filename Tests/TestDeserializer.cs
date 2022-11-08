@@ -23,7 +23,7 @@ namespace Tests
         }
 
         [Test]
-        public void Array()
+        public void Arrays()
         {
             var result = _deserializer.Deserialize("Array(String)");
             Assert.That(result, Is.EqualTo(typeof(string[])));
@@ -65,10 +65,20 @@ namespace Tests
         }
 
         [Test]
-        public void OpenlessRegistration()
+        public void RegistrationOpenless()
         {
             var type = typeof(Dictionary<string, Dictionary<int, int?>>);
             var deserializer = new TypeDeserializer(new[] { type });
+            var result = deserializer.Deserialize("Dictionary(String-Dictionary(Int32-Nullable(Int32)))");
+            Assert.That(result, Is.EqualTo(type));
+        }
+
+        [Test]
+        public void RegistrationAdditional()
+        {
+            var deserializer = new TypeDeserializer(Array.Empty<Type>());
+            var type = typeof(Dictionary<string, Dictionary<int, int?>>);
+            deserializer.Register(type);
             var result = deserializer.Deserialize("Dictionary(String-Dictionary(Int32-Nullable(Int32)))");
             Assert.That(result, Is.EqualTo(type));
         }
