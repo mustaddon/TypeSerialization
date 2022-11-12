@@ -12,11 +12,11 @@
     <Company></Company>
     <Authors>Leonid Salavatov</Authors>
     <Copyright>Leonid Salavatov 2022</Copyright>
-    <PackageId>TypeSerialization</PackageId>
-    <Product>TypeSerialization</Product>
-    <Title>TypeSerialization</Title>
-    <Description>Serialization an object type to/from a string (URL safe format)</Description>
-    <PackageTags>type serialization serializer type2string string2type type-to-string type-from-string string-to-type uri-safe url-safe</PackageTags>
+    <PackageId>TypeSerialization.Json</PackageId>
+    <Product>TypeSerialization.Json</Product>
+    <Title>TypeSerialization.Json</Title>
+    <Description>Serialization an object type to/from a JSON</Description>
+    <PackageTags>json type serialization json-converter type-converter type2json json2type type-to-json type-from-json json-to-type</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/mustaddon/TypeSerialization</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mustaddon/TypeSerialization</RepositoryUrl>
@@ -26,5 +26,13 @@
     <NeutralLanguage />
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\TypeSerialization\TypeSerialization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+  	<PackageReference Include="System.Text.Json" Version="7.0.0" />
+  </ItemGroup>
 
 </Project>

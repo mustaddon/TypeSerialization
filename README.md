@@ -16,11 +16,7 @@ Console.WriteLine(str);
 
 ## Example 2: Deserialization
 ```C#
-var deserializer = new TypeDeserializer(new[] {
-    // types pool for resolving
-    typeof(int).Assembly, typeof(List<>).Assembly,
-}.SelectMany(x => x.GetTypes()));
-
+var deserializer = new TypeDeserializer(/* add your possible types for resolving */);
 var type = deserializer.Deserialize("Dictionary(Int32-String)");
 Console.WriteLine(type);
 

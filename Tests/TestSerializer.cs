@@ -3,6 +3,13 @@ namespace Tests
     public class TestSerializer
     {
         [Test]
+        public void RuntimeType()
+        {
+            var result = TypeSerializer.Serialize(1.GetType().GetType());
+            Assert.That(result, Is.EqualTo("Type"));
+        }
+
+        [Test]
         public void String()
         {
             var result = TypeSerializer.Serialize(typeof(string));
@@ -56,6 +63,13 @@ namespace Tests
         {
             var result = TypeSerializer.Serialize(new[] { typeof(List<>), typeof(Dictionary<,>) });
             Assert.That(result, Is.EqualTo("List()-Dictionary(-)"));
+        }
+
+        [Test]
+        public void ManyNullable()
+        {
+            var result = TypeSerializer.Serialize(new[] { typeof(int), null, typeof(string) });
+            Assert.That(result, Is.EqualTo("Int32--String"));
         }
     }
 }

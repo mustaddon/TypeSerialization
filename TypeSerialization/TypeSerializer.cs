@@ -14,6 +14,9 @@ namespace TypeSerialization
             if (type.IsArray)
                 return $"{nameof(Array)}({Serialize(type.GetElementType()!)})";
 
+            if (!type.IsPublic && Types.Type.IsAssignableFrom(type))
+                return nameof(Type);
+
             if (!type.IsGenericType)
                 return type.Name;
 
@@ -23,9 +26,9 @@ namespace TypeSerialization
         /// <summary>Converts an array of object types to a string representation.</summary>
         /// <param name="types">Object types.</param>
         /// <returns>A string like: "Boolean-List(String)-Array(Nullable(Int32))".</returns>
-        public static string Serialize(this IEnumerable<Type> types)
+        public static string Serialize(this IEnumerable<Type?> types)
         {
-            return string.Join("-", types.Select(x => x.IsGenericParameter ? string.Empty : Serialize(x)));
+            return string.Join("-", types.Select(x => x == null || x.IsGenericParameter ? string.Empty : Serialize(x)));
         }
     }
 }

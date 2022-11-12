@@ -7,19 +7,23 @@ namespace TypeSerialization
 {
     public sealed class TypeDeserializer
     {
-        public TypeDeserializer(IEnumerable<Type> types)
+        public TypeDeserializer(IEnumerable<Type>? types = null)
         {
-            _types = new(() => new TypesCollection(types));
+            _types = new(() => new TypesCollection(types ?? Types.Defaults.Value));
         }
 
         readonly Lazy<TypesCollection> _types;
         readonly ConcurrentDictionary<string, Type> _deserializedGenerics = new();
 
+
         /// <summary>Converts the string representation of a type to an object type.</summary>
         /// <param name="value">A string like: "String", "Array(Int32)", "Dictionary(Int32-String)", ...</param>
         /// <returns>Object type.</returns>
-        public Type Deserialize(string value)
+        public Type? Deserialize(string? value)
         {
+            if (value == null || value.Length == 0)
+                return null;
+
             if (value[value.Length - 1] != ')')
                 return _types.Value.Simples.TryGetValue(value, out var simple) ? simple
                     : throw NotRegisteredException(value);
@@ -32,11 +36,15 @@ namespace TypeSerialization
             return type;
         }
 
+
         /// <summary>Converts the string representation of types to an array of object types.</summary>
         /// <param name="value">A string like: "Boolean-List(String)-Array(Nullable(Int32))".</param>
         /// <returns>Array of object types.</returns>
-        public Type[] DeserializeMany(string value)
+        public Type?[] DeserializeMany(string? value)
         {
+            if (value == null)
+                return Array.Empty<Type>();
+
             return ExtractTypeStrings(value, 0, value.Length).Select(Deserialize).ToArray();
         }
 
@@ -113,6 +121,8 @@ namespace TypeSerialization
     {
         public TypesCollection(IEnumerable<Type> types)
         {
+            Add(Types.Type);
+
             foreach (var type in types)
                 Add(type);
         }

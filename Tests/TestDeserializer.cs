@@ -65,6 +65,13 @@ namespace Tests
         }
 
         [Test]
+        public void ManyNullable()
+        {
+            var result = _deserializer.DeserializeMany("Int32--String");
+            Assert.That(result, Is.EqualTo(new[] { typeof(int), null, typeof(string) }));
+        }
+
+        [Test]
         public void RegistrationOpenless()
         {
             var type = typeof(Dictionary<string, Dictionary<int, int?>>);
