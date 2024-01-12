@@ -23,3 +23,5 @@ Console.WriteLine(type);
 // Console output: 
 // System.Collections.Generic.Dictionary`2[System.Int32,System.String]
 ```
+
+[Program.cs](https://github.com/mustaddon/TypeSerialization/tree/master/Examples/Program.cs)
