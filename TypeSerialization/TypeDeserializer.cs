@@ -2,18 +2,21 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using TypeSerialization._internal;
 
 namespace TypeSerialization
 {
     public sealed class TypeDeserializer
     {
-        public TypeDeserializer(IEnumerable<Type>? types = null)
+        public TypeDeserializer(IEnumerable<Type>? types = null, Formats format = Formats.UriSafe)
         {
             _types = new(() => new TypesCollection(types ?? Types.Defaults.Value));
+            _format = SerializationFormat.Values[(int)format];
         }
 
         readonly Lazy<TypesCollection> _types;
         readonly ConcurrentDictionary<string, Type> _deserializedGenerics = new();
+        readonly SerializationFormat _format;
 
 
         /// <summary>Converts the string representation of a type to an object type.</summary>
@@ -23,8 +26,8 @@ namespace TypeSerialization
         {
             if (value == null || value.Length == 0)
                 return null;
-
-            if (value[value.Length - 1] != ')')
+            
+            if (value[value.Length - 1] != _format.Close)
                 return _types.Value.Simples.TryGetValue(value, out var simple) ? simple
                     : throw NotRegisteredException(value);
 
@@ -74,10 +77,10 @@ namespace TypeSerialization
             return type ?? throw NotRegisteredException(str);
         }
 
-        static List<string> TypeParts(string str)
+        List<string> TypeParts(string str)
         {
             var result = new List<string>();
-            var typeLen = str.IndexOf('(');
+            var typeLen = str.IndexOf(_format.Open);
 
             if (typeLen < 0)
             {
@@ -93,21 +96,21 @@ namespace TypeSerialization
             return result;
         }
 
-        static IEnumerable<string> ExtractTypeStrings(string str, int start, int end)
+        IEnumerable<string> ExtractTypeStrings(string str, int start, int end)
         {
             var openCount = 0;
 
             for (var i = start; i < end; i++)
             {
-                if (str[i] == '-' && openCount <= 0)
+                if (str[i] == _format.Sep && openCount <= 0)
                 {
                     yield return str.Substring(start, i - start);
                     openCount = 0;
                     start = i + 1;
                 }
-                else if (str[i] == '(')
+                else if (str[i] == _format.Open)
                     openCount++;
-                else if (str[i] == ')')
+                else if (str[i] == _format.Close)
                     openCount--;
             }
 
