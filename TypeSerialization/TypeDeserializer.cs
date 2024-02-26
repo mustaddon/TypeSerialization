@@ -72,7 +72,7 @@ namespace TypeSerialization
             if (parts.Count == 1)
                 _types.Value.Simples.TryGetValue(typeName, out type);
             else if (_types.Value.Generics.TryGetValue($"{typeName}`{parts.Count - 1}", out type) && parts.Skip(1).Any(x => x.Length > 0))
-                type = type.MakeGenericType(parts.Skip(1).Select(x => Parse(x)).ToArray());
+                type = type.MakeGenericType(parts.Skip(1).Select(Parse).ToArray());
 
             return type ?? throw NotRegisteredException(str);
         }

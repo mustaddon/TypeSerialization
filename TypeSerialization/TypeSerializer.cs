@@ -24,8 +24,8 @@ namespace TypeSerialization
             if (!type.IsGenericType)
                 return type.Name;
 
-            var len = type.Name.IndexOf('`');
-            var name = len < 0 ? type.Name : type.Name.Substring(0, len);
+            var nameLength = type.Name.IndexOf('`');
+            var name = nameLength < 0 ? type.Name : type.Name.Substring(0, nameLength);
 
             return string.Format(
                 SerializationFormat.Values[(int)format].Format,
@@ -41,7 +41,7 @@ namespace TypeSerialization
 #if NET6_0_OR_GREATER
                 SerializationFormat.Values[(int)format].Sep,
 #else
-                SerializationFormat.Values[(int)format].Sep.ToString(),
+                SerializationFormat.Values[(int)format].SepStr,
 #endif
                 types.Select(x => x == null || x.IsGenericParameter ? string.Empty : Serialize(x, format)));
         }

@@ -11,4 +11,7 @@ internal class SerializationFormat(string format, char open, char close, char se
     public readonly char Open = open;
     public readonly char Close = close;
     public readonly char Sep = sep;
+#if NETSTANDARD2_0
+    public readonly string SepStr = sep.ToString();
+#endif
 }
