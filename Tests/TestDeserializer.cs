@@ -37,6 +37,14 @@ namespace Tests
         }
 
         [Test]
+        public void Custom()
+        {
+            var serialise = TypeSerialization.TypeSerializer.Serialize(typeof(List<IEnumerable<TestDeserializer>>));
+            var result = _deserializer.Deserialize(serialise);
+            Assert.That(result, Is.EqualTo(typeof(List<IEnumerable<TestDeserializer>>)));
+        }
+
+        [Test]
         public void DictionaryOpen()
         {
             var result = _deserializer.Deserialize("Dictionary(-)");

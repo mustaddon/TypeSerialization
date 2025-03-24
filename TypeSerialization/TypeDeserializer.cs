@@ -26,10 +26,10 @@ namespace TypeSerialization
         {
             if (value == null || value.Length == 0)
                 return null;
-            
+
             if (value[value.Length - 1] != _format.Close)
-                return _types.Value.Simples.TryGetValue(value, out var simple) ? simple
-                    : throw NotRegisteredException(value);
+                return _types.Value.Simples.TryGetValue(value, out var simple) ? simple 
+                    : TryConvert(value, simple);
 
             if (_deserializedGenerics.TryGetValue(value, out var type))
                 return type;
@@ -73,8 +73,12 @@ namespace TypeSerialization
                 _types.Value.Simples.TryGetValue(typeName, out type);
             else if (_types.Value.Generics.TryGetValue($"{typeName}`{parts.Count - 1}", out type) && parts.Skip(1).Any(x => x.Length > 0))
                 type = type.MakeGenericType(parts.Skip(1).Select(Parse).ToArray());
+            return TryConvert(typeName, type);
+        }
 
-            return type ?? throw NotRegisteredException(str);
+        static Type TryConvert(string typeName, Type? type)
+        {
+            return type is not null ? type : Type.GetType(typeName) is Type _type ? _type : throw NotRegisteredException(typeName);
         }
 
         List<string> TypeParts(string str)
