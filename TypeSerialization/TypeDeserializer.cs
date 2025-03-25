@@ -10,13 +10,16 @@ namespace TypeSerialization
     {
         public TypeDeserializer(IEnumerable<Type>? types = null, Formats format = Formats.UriSafe)
         {
-            _types = new(() => new TypesCollection(types ?? Types.Defaults.Value));
+            _types = new(() => new TypesCollection(types ?? DefaultTypes));
             _format = SerializationFormat.Values[(int)format];
         }
 
         readonly Lazy<TypesCollection> _types;
         readonly ConcurrentDictionary<string, Type> _deserializedGenerics = new();
         readonly SerializationFormat _format;
+
+
+        public static Type[] DefaultTypes => Types.Defaults.Value;
 
 
         /// <summary>Converts the string representation of a type to an object type.</summary>

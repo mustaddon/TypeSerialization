@@ -10,23 +10,22 @@ namespace TypeSerialization;
 
 internal static class Types
 {
-    public static readonly Type Type = typeof(Type);
-    public static readonly Type Attribute = typeof(Attribute);
-    public static readonly Type Exception = typeof(Exception);
+    internal static readonly Type Type = typeof(Type);
+    internal static readonly Type Attribute = typeof(Attribute);
+    internal static readonly Type Exception = typeof(Exception);
 
-    public static bool IsStatic(this Type type) => type.IsAbstract && type.IsSealed;
-    public static bool IsAttribute(this Type type) => Attribute.IsAssignableFrom(type);
-    public static bool IsException(this Type type) => Exception.IsAssignableFrom(type);
+    internal static bool IsStatic(this Type type) => type.IsAbstract && type.IsSealed;
+    internal static bool IsAttribute(this Type type) => Attribute.IsAssignableFrom(type);
+    internal static bool IsException(this Type type) => Exception.IsAssignableFrom(type);
 
-
-    public static readonly Lazy<Type[]> Defaults = new(() => Array.Empty<Type>()
+    internal static readonly Lazy<Type[]> Defaults = new(() => Array.Empty<Type>()
         .Concat(typeof(int).Assembly.GetTypes().Where(x => typeof(IComparable).IsAssignableFrom(x)))
         .Concat(typeof(List<>).Assembly.GetTypes().Where(x => typeof(IEnumerable).IsAssignableFrom(x)))
         .Where(x => x.IsPublic && !x.IsStatic() && !x.IsEnum)
         .Where(x => !x.IsAttribute())
         .Where(x => !x.IsException())
         .Concat(new[] {
-            typeof(object), typeof(Stream), 
+            typeof(object), typeof(Stream),
             typeof(Task), typeof(Task<>), typeof(CancellationToken?)
         }).ToArray());
 }
