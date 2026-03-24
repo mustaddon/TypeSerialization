@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,21 +14,115 @@ namespace TypeSerialization;
 internal static class Types
 {
     internal static readonly Type Type = typeof(Type);
-    internal static readonly Type Attribute = typeof(Attribute);
-    internal static readonly Type Exception = typeof(Exception);
+    internal static readonly Type Array = typeof(Array);
 
-    internal static bool IsStatic(this Type type) => type.IsAbstract && type.IsSealed;
-    internal static bool IsAttribute(this Type type) => Attribute.IsAssignableFrom(type);
-    internal static bool IsException(this Type type) => Exception.IsAssignableFrom(type);
+    internal static string NameGetter(Type type) => type.Name;
 
-    internal static readonly Lazy<Type[]> Defaults = new(() => Array.Empty<Type>()
-        .Concat(typeof(int).Assembly.GetTypes().Where(x => typeof(IComparable).IsAssignableFrom(x)))
-        .Concat(typeof(List<>).Assembly.GetTypes().Where(x => typeof(IEnumerable).IsAssignableFrom(x)))
-        .Where(x => x.IsPublic && !x.IsStatic() && !x.IsEnum)
-        .Where(x => !x.IsAttribute())
-        .Where(x => !x.IsException())
-        .Concat(new[] {
-            typeof(object), typeof(Stream),
-            typeof(Task), typeof(Task<>), typeof(CancellationToken?)
-        }).ToArray());
+    internal static readonly Lazy<(string Name, Type Type)[]> Defaults = new(()
+        =>
+        [
+            .. BuiltTypes(),
+            .. DefaultDataTypes().Select(type => (NameGetter(type), type)),
+        ]);
+
+    internal static IEnumerable<(string Name, Type Type)> BuiltTypes()
+    {
+        yield return ("object", typeof(object));
+        yield return ("string", typeof(string));
+        yield return ("bool", typeof(bool));
+        yield return ("char", typeof(char));
+        yield return ("byte", typeof(byte));
+        yield return ("sbyte", typeof(sbyte));
+        yield return ("short", typeof(short));
+        yield return ("ushort", typeof(ushort));
+        yield return ("int", typeof(int));
+        yield return ("uint", typeof(uint));
+        yield return ("nint", typeof(nint));
+        yield return ("nuint", typeof(nuint));
+        yield return ("long", typeof(long));
+        yield return ("ulong", typeof(ulong));
+        yield return ("float", typeof(float));
+        yield return ("double", typeof(double));
+        yield return ("decimal", typeof(decimal));
+    }
+
+    internal static IEnumerable<Type> DefaultDataTypes()
+    {
+        foreach (var (_, type) in BuiltTypes())
+            yield return type;
+
+        yield return typeof(Type);
+        yield return typeof(Nullable<>);
+        yield return typeof(CancellationToken);
+        yield return typeof(DateTime);
+        yield return typeof(DateTimeOffset);
+        yield return typeof(DateTimeKind);
+        yield return typeof(TimeSpan);
+        yield return typeof(Guid);
+        yield return typeof(KeyValuePair<,>);
+        yield return typeof(Version);
+        yield return typeof(Task);
+        yield return typeof(Task<>);
+        yield return typeof(Lazy<>);
+        yield return typeof(Stream);
+        yield return typeof(MemoryStream);
+        yield return typeof(FileStream);
+        yield return typeof(Array);
+        yield return typeof(Hashtable);
+        yield return typeof(IEnumerable);
+        yield return typeof(IEnumerable<>);
+        yield return typeof(List<>);
+        yield return typeof(IList);
+        yield return typeof(IList<>);
+        yield return typeof(IReadOnlyList<>);
+        yield return typeof(Collection<>);
+        yield return typeof(ICollection);
+        yield return typeof(ICollection<>);
+        yield return typeof(HashSet<>);
+        yield return typeof(ISet<>);
+        yield return typeof(Dictionary<,>);
+        yield return typeof(ConcurrentDictionary<,>);
+        yield return typeof(IDictionary);
+        yield return typeof(IDictionary<,>);
+        yield return typeof(IReadOnlyDictionary<,>);
+        yield return typeof(ConcurrentBag<>);
+        yield return typeof(IProducerConsumerCollection<>);
+        yield return typeof(Queue<>);
+        yield return typeof(ConcurrentQueue<>);
+        yield return typeof(Stack<>);
+        yield return typeof(ConcurrentStack<>);
+
+#if NET6_0_OR_GREATER
+        yield return typeof(Half);
+        yield return typeof(NFloat);
+        yield return typeof(TimeOnly);
+        yield return typeof(DateOnly);
+        yield return typeof(IReadOnlySet<>);
+        yield return typeof(ValueTask);
+        yield return typeof(ValueTask<>);
+        yield return typeof(IAsyncEnumerable<>);
+#endif
+#if NET7_0_OR_GREATER
+        yield return typeof(Int128);
+        yield return typeof(UInt128);
+#endif
+
+        yield return typeof(Tuple<>);
+        yield return typeof(Tuple<,>);
+        yield return typeof(Tuple<,,>);
+        yield return typeof(Tuple<,,,>);
+        yield return typeof(Tuple<,,,,>);
+        yield return typeof(Tuple<,,,,,>);
+        yield return typeof(Tuple<,,,,,,>);
+        yield return typeof(Tuple<,,,,,,,>);
+
+        yield return typeof(ValueTuple<>);
+        yield return typeof(ValueTuple<,>);
+        yield return typeof(ValueTuple<,,>);
+        yield return typeof(ValueTuple<,,,>);
+        yield return typeof(ValueTuple<,,,,>);
+        yield return typeof(ValueTuple<,,,,,>);
+        yield return typeof(ValueTuple<,,,,,,>);
+        yield return typeof(ValueTuple<,,,,,,,>);
+    }
 }

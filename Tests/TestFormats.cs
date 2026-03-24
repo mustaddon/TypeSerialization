@@ -10,7 +10,7 @@ public class TestFormats
             var deserializer = new TypeDeserializer(new[] {
                 typeof(int).Assembly,
                 typeof(List<>).Assembly,
-            }.SelectMany(x => x.GetTypes()), format);
+            }.SelectMany(x => x.GetTypes()));
 
             foreach (var type in new[] {
                 typeof(int),

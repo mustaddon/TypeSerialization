@@ -4,19 +4,20 @@ using System.Text.Json.Serialization;
 
 namespace TypeSerialization.Json;
 
-public class JsonTypeConverter : JsonConverterFactory
+public class JsonTypeConverter(
+    TypeDeserializer typeDeserializer, 
+    Formats serializeFormat = Formats.UriSafe, 
+    Func<Type, string>? serializeNameProvider = null)
+    : JsonConverterFactory
 {
-    public JsonTypeConverter(TypeDeserializer typeDeserializer)
-    {
-        _typeConverter = new InnerConverter(typeDeserializer ?? throw new ArgumentNullException(nameof(typeDeserializer)));
-    }
-
-    readonly InnerConverter _typeConverter;
-    static readonly Type _type = typeof(Type);
-
+    readonly InnerConverter _typeConverter = new(
+        typeDeserializer ?? throw new ArgumentNullException(nameof(typeDeserializer)),
+        serializeFormat,
+        serializeNameProvider ?? (static t => t.Name));
+    
     public override bool CanConvert(Type typeToConvert)
     {
-        return _type.IsAssignableFrom(typeToConvert);
+        return typeof(Type).IsAssignableFrom(typeToConvert);
     }
 
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
@@ -24,23 +25,20 @@ public class JsonTypeConverter : JsonConverterFactory
         return _typeConverter;
     }
 
-    class InnerConverter : JsonConverter<Type>
+    class InnerConverter(
+        TypeDeserializer typeDeserializer, 
+        Formats format, 
+        Func<Type, string> nameGetter) 
+        : JsonConverter<Type>
     {
-        public InnerConverter(TypeDeserializer typeDeserializer)
-        {
-            _typeDeserializer = typeDeserializer;
-        }
-
-        readonly TypeDeserializer _typeDeserializer;
-
         public override Type? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return _typeDeserializer.Deserialize(reader.GetString());
+            return typeDeserializer.Deserialize(reader.GetString());
         }
 
         public override void Write(Utf8JsonWriter writer, Type value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value?.Serialize());
+            writer.WriteStringValue(value?.Serialize(format, nameGetter));
         }
     }
 }

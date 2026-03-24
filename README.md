@@ -5,16 +5,25 @@ Serialization an object type to/from a string
 * Generics support
 * URI safe format
 
-## Example 1: Serialization
+## Example 1: Serialization into a uri-safe format
 ```C#
-var str = TypeSerializer.Serialize(typeof(Dictionary<int,string>));
+var str = TypeSerializer.Serialize(typeof(Dictionary<int,string>), Formats.UriSafe);
 Console.WriteLine(str);
 
 // Console output: 
 // Dictionary(Int32-String)
 ```
 
-## Example 2: Deserialization
+## Example 2: Serialization into a code-like format
+```C#
+var str = TypeSerializer.Serialize(typeof(Dictionary<int,string>), Formats.CodeLike);
+Console.WriteLine(str);
+
+// Console output: 
+// Dictionary<Int32,MyCustomClass>
+```
+
+## Example 3: Deserialization
 ```C#
 var deserializer = new TypeDeserializer(/* add your possible types for resolving */);
 var type = deserializer.Deserialize("Dictionary(Int32-String)");

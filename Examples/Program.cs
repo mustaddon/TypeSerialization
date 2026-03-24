@@ -6,16 +6,16 @@ using TypeSerialization;
 using TypeSerialization.Json;
 
 // Example 1: Serialization
-var str = TypeSerializer.Serialize(typeof(Dictionary<int, MyCustomClass>));
+var str = TypeSerializer.Serialize(typeof(Dictionary<int, MyCustomClass>), Formats.UriSafe);
 Console.WriteLine(str);
-
 
 // Example 2: Deserialization
 var deserializer = new TypeDeserializer(
     /* add your possible types for resolving */
-    Assembly.GetExecutingAssembly().GetTypes().Concat(TypeDeserializer.DefaultTypes)
+    Assembly.GetExecutingAssembly().GetTypes()
 );
-var type = deserializer.Deserialize("Dictionary(Int32-MyCustomClass)");
+
+var type = deserializer.Deserialize("Dictionary<int,MyCustomClass>");
 Console.WriteLine(type);
 
 
@@ -24,7 +24,7 @@ var jsonOptions = new JsonSerializerOptions();
 jsonOptions.Converters.Add(new JsonTypeConverter(deserializer));
 
 var json = JsonSerializer.Serialize(type, jsonOptions);
-Console.WriteLine(type);
+Console.WriteLine(json);
 
 
 // Example 4: Json Deserialization
