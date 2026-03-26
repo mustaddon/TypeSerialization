@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TypeSerialization.Json\TypeSerialization.Json.csproj" />
     <ProjectReference Include="..\TypeSerialization\TypeSerialization.csproj" />
   </ItemGroup>
 

@@ -1,8 +1,12 @@
 ﻿namespace Examples
 {
-    internal class MyCustomClass
+    internal interface IExampleBase
     {
-        public string? Prop1 { get; set; }
-        public int Prop2 { get; set; }
+
+    }
+
+    internal class MyCustomClass : IExampleBase
+    {
+        public Type? MyTypeProperty { get; set; }
     }
 }

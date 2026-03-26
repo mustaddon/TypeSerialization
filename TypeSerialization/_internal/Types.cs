@@ -9,13 +9,10 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TypeSerialization;
+namespace TypeSerialization._internal;
 
 internal static class Types
 {
-    internal static readonly Type Type = typeof(Type);
-    internal static readonly Type Array = typeof(Array);
-
     internal static string NameGetter(Type type) => type.Name;
 
     internal static readonly Lazy<(string Name, Type Type)[]> Defaults = new(()
@@ -51,6 +48,7 @@ internal static class Types
         foreach (var (_, type) in BuiltTypes())
             yield return type;
 
+        yield return typeof(void);
         yield return typeof(Type);
         yield return typeof(Nullable<>);
         yield return typeof(CancellationToken);

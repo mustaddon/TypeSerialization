@@ -17,11 +17,11 @@ public static class TypeSerializer
         if (type.IsArray)
             return string.Format(
                 SerializationFormat.Values[(int)format].Format,
-                nameGetter(Types.Array),
+                nameGetter(typeof(Array)),
                 Serialize(type.GetElementType()!, format, nameGetter));
 
-        if (!type.IsPublic && Types.Type.IsAssignableFrom(type))
-            return nameGetter(Types.Type);
+        if (!type.IsPublic && typeof(Type).IsAssignableFrom(type))
+            return nameGetter(typeof(Type));
 
         if (!type.IsGenericType)
             return nameGetter(type);

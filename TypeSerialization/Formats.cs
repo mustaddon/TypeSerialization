@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TypeSerialization;
+﻿namespace TypeSerialization;
 
 public enum Formats
 {

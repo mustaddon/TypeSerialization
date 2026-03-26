@@ -6,9 +6,9 @@
     <Nullable>enable</Nullable>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\TypeSerialization.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>1.2.4</AssemblyVersion>
-    <FileVersion>1.2.4</FileVersion>
-    <Version>1.2.4</Version>
+    <AssemblyVersion>1.3.0</AssemblyVersion>
+    <FileVersion>1.3.0</FileVersion>
+    <Version>1.3.0</Version>
     <Company></Company>
     <Authors>Leonid Salavatov</Authors>
     <Copyright>Leonid Salavatov 2026</Copyright>
@@ -16,7 +16,7 @@
     <Product>TypeSerialization</Product>
     <Title>TypeSerialization</Title>
     <Description>Serialization an object type to/from a string (URL safe format)</Description>
-    <PackageTags>type serialization serializer type2string string2type type-to-string type-from-string string-to-type uri-safe url-safe</PackageTags>
+    <PackageTags>type serialization serializer type2string string2type type-to-string type-from-string string-to-type uri-safe url-safe type2json json2type type-to-json type-from-json json-to-type</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/mustaddon/TypeSerialization</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mustaddon/TypeSerialization</RepositoryUrl>
@@ -26,5 +26,9 @@
     <NeutralLanguage />
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+  	<PackageReference Include="System.Text.Json" Version="10.0.0" />
+  </ItemGroup>
 
 </Project>

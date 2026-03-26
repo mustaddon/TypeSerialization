@@ -33,4 +33,27 @@ Console.WriteLine(type);
 // System.Collections.Generic.Dictionary`2[System.Int32,System.String]
 ```
 
+## Example 4: JSON serialization
+```C#
+var jsonOptions = new JsonSerializerOptions();
+jsonOptions.Converters.Add(new JsonTypeConverter(deserializer));
+
+var obj = new MyCustomClass() { MyTypeProperty = typeof(List<int>) };
+var json = JsonSerializer.Serialize(obj, jsonOptions);
+Console.WriteLine(json);
+
+// Console output: 
+// {"MyTypeProperty":"List(Int32)"}
+```
+
+## Example 5: JSON deserialization
+```C#
+var objFromJson = JsonSerializer.Deserialize<MyCustomClass>(json, jsonOptions);
+Console.WriteLine(objFromJson.MyTypeProperty);
+
+// Console output: 
+// System.Collections.Generic.List`1[System.Int32]
+```
+
+
 [Program.cs](https://github.com/mustaddon/TypeSerialization/tree/master/Examples/Program.cs)

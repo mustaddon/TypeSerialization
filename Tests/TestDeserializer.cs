@@ -86,4 +86,11 @@ public class TestDeserializer
         var result = _deserializer.Deserialize("Dictionary(String-Dictionary(Int32-Nullable(Int32)))");
         Assert.That(result, Is.EqualTo(typeof(Dictionary<string, Dictionary<int, int?>>)));
     }
+
+    [Test]
+    public void Void()
+    {
+        var result = _deserializer.Deserialize("Void");
+        Assert.That(result, Is.EqualTo(typeof(void)));
+    }
 }

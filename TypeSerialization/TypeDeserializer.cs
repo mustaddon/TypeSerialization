@@ -13,9 +13,10 @@ public sealed class TypeDeserializer(IEnumerable<(string, Type)>? types = null)
     { }
 
     readonly Lazy<TypesCollection> _types = new(() => new TypesCollection(Types.Defaults.Value.Concat(types ?? []).Select(x => (x.Item2, x.Item1))));
-    readonly ConcurrentDictionary<string, Lazy<Type>> _deserializedGenerics = new();
+    readonly ConcurrentDictionary<string, Lazy<Type>> _deserializedGenerics = [];
 
-    public static IEnumerable<Type> DefaultTypes => Types.Defaults.Value.Select(x => x.Type).Distinct();
+    public static TypeDeserializer Default => _default.Value;
+    static readonly Lazy<TypeDeserializer> _default = new(() => new());
 
     /// <summary>Converts the string representation of a type to an object type.</summary>
     /// <param name="value">A string like: "String", "Array(Int32)", "Dictionary(Int32-String)", ...</param>
@@ -61,15 +62,16 @@ public sealed class TypeDeserializer(IEnumerable<(string, Type)>? types = null)
         return [.. ExtractTypeStrings(format, value, 0, value.Length).Select(Deserialize)];
     }
 
+    public TypeDeserializer Register(params Type[] types) => Register(types.AsEnumerable());
+    public TypeDeserializer Register(IEnumerable<Type> types) => Register(types.Select(t => (Types.NameGetter(t), t)));
 
-    public void Register(params Type[] types) => Register(types.AsEnumerable());
-    public void Register(IEnumerable<Type> types) => Register(types.Select(t => (Types.NameGetter(t), t)));
-
-    public void Register(params (string Name, Type Type)[] types) => Register(types.AsEnumerable());
-    public void Register(IEnumerable<(string Name, Type Type)> types)
+    public TypeDeserializer Register(params (string Name, Type Type)[] types) => Register(types.AsEnumerable());
+    public TypeDeserializer Register(IEnumerable<(string Name, Type Type)> types)
     {
         foreach (var (key, type) in types)
             _types.Value.Add(type, key);
+
+        return this;
     }
 
     static bool TryNormFormat(SerializationFormat format, string str, out string formatted)
