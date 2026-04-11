@@ -8,7 +8,7 @@ public class TestJson
     public TestJson()
     {
         _jsonOptions = new JsonSerializerOptions();
-        _jsonOptions.Converters.Add(new JsonTypeConverter(new TypeDeserializer()));
+        _jsonOptions.Converters.Add(new JsonTypeConverter(TypeDeserializer.Default));
     }
 
     readonly JsonSerializerOptions _jsonOptions;
@@ -38,6 +38,15 @@ public class TestJson
         var json = JsonSerializer.Serialize(type, _jsonOptions);
         var result = JsonSerializer.Deserialize<Type>(json, _jsonOptions);
         Assert.That(result, Is.EqualTo(type));
+    }
+
+    [Test]
+    public void Prop()
+    {
+        var obj = new { TypeProp = typeof(int) };
+        var json = JsonSerializer.Serialize(obj, _jsonOptions);
+        var result = JsonSerializer.Deserialize(json, obj.GetType(), _jsonOptions);
+        Assert.That(result, Is.EqualTo(obj));
     }
 
     [Test]
